@@ -31,7 +31,9 @@ license_app = FastAPI()
 license_obj = License(db)
 KpDrawer = CertificateGenerator(log=log,background_path="./resource/bg_kp_2r6.png",output_folder = "data/certificates",default_avatar_path="./resource/default_avatar.jpg")
 
-IMAGE_FOLDER = "data/certificates"
+file = os.path.dirname(os.path.abspath(__file__))
+path = os.path.join(file, "..")
+IMAGE_FOLDER = path + "data/certificates"
 DOMAIN = conf.get()["api"]["domain"]
 PORT = conf.get()["api"]["port"]
 
@@ -134,7 +136,7 @@ license_app.mount("/images", StaticFiles(directory=IMAGE_FOLDER), name="images")
 
 # 启动定时删除线程
 def delete_file(path):
-    time.sleep(60)  # 等待60秒
+    time.sleep(300)  # 等待300秒
     try:
         if os.path.exists(path):
             os.remove(path)
