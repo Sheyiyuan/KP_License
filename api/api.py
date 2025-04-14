@@ -1,5 +1,6 @@
 from fastapi import FastAPI,Response,Request
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 import sys
 import threading
 import time
@@ -80,6 +81,7 @@ async def license_deal(request: Request):
                 level=info["level"],
                 date=timestamp_to_date(license_dict["time"])
             )
+            create_image_and_start_deletion(f"certificate_{license_dict['lid']}.jpg")
             return JSONResponse(
             status_code=200,
             content={
@@ -127,28 +129,22 @@ async def license_deal(request: Request):
     )
 
 
-@license_app.get("/images/{image_path:path}")
-async def get_image(image_path: str):
-    image_path = os.path.join(IMAGE_FOLDER, image_path)
-    # 检查图片文件是否存在
-    if not os.path.exists(image_path):
-        return {"error": "图片文件不存在"}
+# 挂载静态目录
+license_app.mount("/images", StaticFiles(directory=IMAGE_FOLDER), name="images")
 
-    # 读取图片内容
-    with open(image_path, "rb") as f:
-        image_data = f.read()
+# 启动定时删除线程
+def delete_file(path):
+    time.sleep(60)  # 等待60秒
+    try:
+        if os.path.exists(path):
+            os.remove(path)
+            print(f"已删除图片: {path}")
+    except Exception as e:
+        print(f"删除图片失败: {e}")
 
-    # 启动定时删除线程
-    def delete_file(path):
-        time.sleep(60)  # 等待60秒
-        try:
-            if os.path.exists(path):
-                os.remove(path)
-                print(f"已删除图片: {path}")
-        except Exception as e:
-            print(f"删除图片失败: {e}")
 
+# 模拟文件创建时启动删除线程
+def create_image_and_start_deletion(image_name):
+    image_path = os.path.join(IMAGE_FOLDER, image_name)
     threading.Thread(target=delete_file, args=(image_path,)).start()
 
-    # 返回图片数据
-    return Response(content=image_data, media_type="image/jpeg")
