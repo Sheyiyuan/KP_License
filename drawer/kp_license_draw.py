@@ -127,8 +127,9 @@ class CertificateGenerator:
         # 修改字体设置
         font_path = "./resource/fonts/华文仿宋.ttf"
         try:
-            font_l = ImageFont.truetype("./resource/fonts/华文仿宋.ttf", size=48)
-            font_m = ImageFont.truetype("./resource/fonts/Times New Roman.ttf", size=36)
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            font_l = os.path.join(script_dir, "resource/fonts/FangSong.ttf")
+            font_m = os.path.join(script_dir, "resource/fonts/Times New Roman.ttf")
         except:
             font_l = ImageFont.load_default(size=48)
             font_m = ImageFont.load_default(size=36)
