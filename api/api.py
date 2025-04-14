@@ -1,6 +1,7 @@
 from fastapi import FastAPI,Response,Request
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 import sys
 import threading
 import time
@@ -90,7 +91,7 @@ async def license_deal(request: Request):
                 "code": 200,
                 "message": "success",
                 "data": {
-                    "img_url": f"{DOMAIN}:{PORT}/images/certificate_{license_dict['lid']}.jpg",
+                    "img_url": f"http://{DOMAIN}:{PORT}/images/certificate_{license_dict['lid']}.jpg",
                 }
             }
         )

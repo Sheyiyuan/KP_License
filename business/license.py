@@ -17,7 +17,7 @@ class License:
         return base58.b58encode(uuid_bytes).decode('utf-8')
     def register_kp_license(self, name:str, QQ:str, level:int):
         try:
-            lid = self.generate_lid("KP", name, QQ)
+            lid = self.generate_lid("KP", name, QQ+str(level))
             record = self.db.get_record(lid)
             if record is None:
                 # 确保所有传入值都是字符串或可转换为字符串的类型
