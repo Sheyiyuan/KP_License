@@ -70,7 +70,6 @@ async def license_deal(request: Request):
     if option == "register":
         if role == "kp":
             license_dict = license_obj.register_kp_license(name=name,QQ=QQ,level=level)
-            print(license_dict)
             # 解析info字段中的JSON字符串
             info = json.loads(license_dict["info"])
             url = f"http://q2.qlogo.cn/headimg_dl?dst_uin={QQ}&spec=5"
