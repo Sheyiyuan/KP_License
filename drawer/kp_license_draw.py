@@ -127,6 +127,7 @@ class CertificateGenerator:
         # 修改字体设置
         try:
             script_dir = os.path.dirname(os.path.abspath(__file__))
+            script_dir= os.path.dirname(script_dir)
             font_path_l = os.path.join(script_dir, "resource/fonts/FangSong.ttf")
             font_path_m = os.path.join(script_dir, "resource/fonts/Times New Roman.ttf")
             font_l = ImageFont.truetype(font_path_l, size=48)
