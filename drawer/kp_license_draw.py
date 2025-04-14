@@ -125,7 +125,6 @@ class CertificateGenerator:
         background.paste(avatar, (1341, 487))
 
         # 修改字体设置
-        font_path = "./resource/fonts/华文仿宋.ttf"
         try:
             script_dir = os.path.dirname(os.path.abspath(__file__))
             font_path_l = os.path.join(script_dir, "resource/fonts/FangSong.ttf")
@@ -133,7 +132,7 @@ class CertificateGenerator:
             font_l = ImageFont.truetype(font_path_l, size=48)
             font_m = ImageFont.truetype(font_path_m, size=36)
         except Exception as e:
-            print(f"加载字体失败: {e}")
+            print(f"加载字体失败: {e} {font_path_l} {font_path_m}")
             font_l = ImageFont.load_default(size=48)
             font_m = ImageFont.load_default(size=36)
 
