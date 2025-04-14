@@ -32,7 +32,7 @@ license_obj = License(db)
 KpDrawer = CertificateGenerator(log=log,background_path="./resource/bg_kp_2r6.png",output_folder = "data/certificates",default_avatar_path="./resource/default_avatar.jpg")
 
 file = os.path.dirname(os.path.abspath(__file__))
-path = os.path.join(file, "..")
+path = os.path.join(file, "../")
 IMAGE_FOLDER = path + "data/certificates"
 DOMAIN = conf.get()["api"]["domain"]
 PORT = conf.get()["api"]["port"]
