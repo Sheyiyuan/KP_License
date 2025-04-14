@@ -130,8 +130,8 @@ class CertificateGenerator:
             font_l = ImageFont.truetype("./resource/fonts/华文仿宋.ttf", size=48)
             font_m = ImageFont.truetype("./resource/fonts/Times New Roman.ttf", size=36)
         except:
-            font_l = ImageFont.load_default()
-            font_m = ImageFont.load_default()
+            font_l = ImageFont.load_default(size=48)
+            font_m = ImageFont.load_default(size=36)
 
         self._draw_text(draw, (850, 463), f"{certificate_id}", font_m)
         self._draw_centered_text(draw, (415, 720), 674, f"{name}", font_l, fill=(0, 0, 0), bold=True)
