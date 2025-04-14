@@ -128,8 +128,10 @@ class CertificateGenerator:
         font_path = "./resource/fonts/华文仿宋.ttf"
         try:
             script_dir = os.path.dirname(os.path.abspath(__file__))
-            font_l = os.path.join(script_dir, "resource/fonts/FangSong.ttf")
-            font_m = os.path.join(script_dir, "resource/fonts/Times New Roman.ttf")
+            font_path_l = os.path.join(script_dir, "resource/fonts/FangSong.ttf")
+            font_path_m = os.path.join(script_dir, "resource/fonts/Times New Roman.ttf")
+            font_l = ImageFont.truetype(font_path_l, size=48)
+            font_m = ImageFont.truetype(font_path_m, size=36)
         except:
             font_l = ImageFont.load_default(size=48)
             font_m = ImageFont.load_default(size=36)
