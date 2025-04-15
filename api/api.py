@@ -1,3 +1,4 @@
+import asyncio
 from fastapi import FastAPI,Response,Request
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -151,3 +152,12 @@ def create_image_and_start_deletion(image_name):
     image_path = os.path.join(IMAGE_FOLDER, image_name)
     threading.Thread(target=delete_file, args=(image_path,)).start()
 
+
+# 添加全局异常处理中间件
+@license_app.middleware("http")
+async def timeout_middleware(request: Request, call_next):
+    try:
+        # 设置全局超时
+        return await asyncio.wait_for(call_next(request), timeout=30)
+    except asyncio.TimeoutError:
+        return JSONResponse({"error": "请求超时"}, status_code=504)

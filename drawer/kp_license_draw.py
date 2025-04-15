@@ -23,7 +23,7 @@ class CertificateGenerator:
                 os.makedirs(save_dir)
 
             # 发送 HTTP 请求获取图片内容
-            response = requests.get(url, stream=True)
+            response = requests.get(url, stream=True, timeout=(3.05, 10))
             response.raise_for_status()
 
             # 保存图片到本地

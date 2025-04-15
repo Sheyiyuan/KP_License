@@ -5,11 +5,10 @@ from typing import Optional, List, Tuple, Any
 class DB:
     def __init__(self, db_path: str = "data/database/", file: str = "database.db"):
         self.db_path = db_path
-        # 确保数据库目录存在
         os.makedirs(self.db_path, exist_ok=True)
-
         try:
-            self.conn = sqlite3.connect(os.path.join(self.db_path, file))
+            # 建议添加timeout参数
+            self.conn = sqlite3.connect(os.path.join(self.db_path, file), timeout=10)  # 添加10秒超时
             self.cursor = self.conn.cursor()
             self.init_db_option()
         except Exception as e:
