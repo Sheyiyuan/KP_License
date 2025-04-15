@@ -67,6 +67,8 @@ class CertificateGenerator:
         Args:
             x_range: (left, right) 左右边界坐标
             bold: 是否加粗
+        Raises:
+            ValueError: 当文本过长且字体小于24时抛出
         """
         while True:
             text_width = draw.textlength(text, font=font)
@@ -76,6 +78,9 @@ class CertificateGenerator:
                 break
             # 缩小字体大小
             font_size = font.size - 1
+            if font_size < 24:  # 添加最小字体检查
+                raise ValueError(f"文本过长无法适应区域: '{text}' (最小字体24px)")
+            font = ImageFont.truetype(font.path, font_size)
             y_pos = y_pos + 1
 
 
@@ -133,14 +138,15 @@ class CertificateGenerator:
             font_l = ImageFont.truetype(font_path_l, size=48)
             font_m = ImageFont.truetype(font_path_m, size=36)
         except Exception as e:
-            print(f"加载字体失败: {e} {font_path_l} {font_path_m}")
             font_l = ImageFont.load_default(size=48)
             font_m = ImageFont.load_default(size=36)
-
-        self._draw_text(draw, (850, 463), f"{certificate_id}", font_m)
-        self._draw_centered_text(draw, (415, 720), 674, f"{name}", font_l, fill=(0, 0, 0), bold=True)
-        self._draw_centered_text(draw, (370, 580), 817, f"{level}", font_l, fill=(0, 0, 0), bold=True)
-        self._draw_bold_text(draw, (1300, 975), f"{date}", font_l)
+        try:
+            self._draw_text(draw, (850, 463), f"{certificate_id}", font_m)
+            self._draw_centered_text(draw, (415, 720), 674, f"{name}", font_l, fill=(0, 0, 0), bold=True)
+            self._draw_centered_text(draw, (370, 580), 817, f"{level}", font_l, fill=(0, 0, 0), bold=True)
+            self._draw_bold_text(draw, (1300, 975), f"{date}", font_l)
+        except Exception as e:
+            raise e
 
         # 保存为JPEG格式
         background.save(output_path, format='JPEG', quality=95)
@@ -157,4 +163,7 @@ class CertificateGenerator:
             date = data.get('date')
             level = data.get('level')
             output_path = os.path.join(self.output_folder, f"certificate_{certificate_id}.jpg")
-            self.generate_certificate(certificate_id, name, avatar_url, date, level)
+            try:
+                self.generate_certificate(certificate_id, name, avatar_url, date, level)
+            except Exception as e:
+                print(f"生成证书时出错: {e}")

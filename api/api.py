@@ -78,13 +78,24 @@ async def license_deal(request: Request):
             # 解析info字段中的JSON字符串
             info = json.loads(license_dict["info"])
             url = f"http://q2.qlogo.cn/headimg_dl?dst_uin={QQ}&spec=5"
-            KpDrawer.generate_certificate(
-                certificate_id=license_dict["lid"],
-                name=info["name"],
-                avatar_url=url,
-                level=info["level"],
-                date=timestamp_to_date(license_dict["time"])
-            )
+            try:
+                KpDrawer.generate_certificate(
+                    certificate_id=license_dict["lid"],
+                    name=info["name"],
+                    avatar_url=url,
+                    level=info["level"],
+                    date=timestamp_to_date(license_dict["time"])
+                )
+            except Exception as e:
+                print(f"生成证书时出错: {e}")
+                return JSONResponse(
+                    status_code=400,
+                    content={
+                        "code": 400,
+                        "message":f"请求出错：{e}",
+                        "data": {}
+                    }
+                )
             create_image_and_start_deletion(f"certificate_{license_dict['lid']}.jpg")
             return JSONResponse(
             status_code=200,
