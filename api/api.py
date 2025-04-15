@@ -31,7 +31,24 @@ def timestamp_to_date(timestamp: int, fmt: str = "%Y-%m-%d") -> str:
 
 license_app = FastAPI()
 license_obj = License(db)
-KpDrawer = CertificateGenerator(log=log,background_path="./resource/bg_kp_2r6.png",output_folder = "data/certificates",default_avatar_path="./resource/default_avatar.jpg")
+kp_bg_path = conf.get()["resource"]["kp_license_background_path"]
+pl_bg_path = conf.get()["resource"]["pl_license_background_path"]
+ob_bg_path = conf.get()["resource"]["ob_license_background_path"]
+dice_bg_path = conf.get()["resource"]["dice_license_background_path"]
+default_avatar_path = conf.get()["resource"]["default_avatar_path"]
+chinese_font_path = conf.get()["resource"]["chinese_font_path"]
+english_font_path = conf.get()["resource"]["english_font_path"]
+KpDrawer = CertificateGenerator(
+    log=log,
+    kp_background_path=kp_bg_path,
+    ob_background_path=ob_bg_path,
+    dice_background_path=dice_bg_path,
+    pl_background_path=pl_bg_path,
+    output_folder = "data/certificates",
+    default_avatar_path=default_avatar_path,
+    chinese_font_path=chinese_font_path,
+    english_font_path=english_font_path
+)
 
 file = os.path.dirname(os.path.abspath(__file__))
 path = os.path.join(file, "../")
@@ -73,46 +90,41 @@ async def license_deal(request: Request):
 
     # 此处option为register时，p为name，option为confirm时，p为lid
     if option == "register":
-        if role == "kp":
-            license_dict = license_obj.register_kp_license(name=name,QQ=QQ,level=level)
-            # 解析info字段中的JSON字符串
-            info = json.loads(license_dict["info"])
-            url = f"http://q2.qlogo.cn/headimg_dl?dst_uin={QQ}&spec=5"
-            try:
-                KpDrawer.generate_certificate(
-                    certificate_id=license_dict["lid"],
-                    name=info["name"],
-                    avatar_url=url,
-                    level=info["level"],
-                    date=timestamp_to_date(license_dict["time"])
-                )
-            except Exception as e:
-                print(f"生成证书时出错: {e}")
-                return JSONResponse(
-                    status_code=400,
-                    content={
-                        "code": 400,
-                        "message":f"请求出错：{e}",
-                        "data": {}
-                    }
-                )
-            create_image_and_start_deletion(f"certificate_{license_dict['lid']}.jpg")
+        license_dict = license_obj.register_license(role=role,name=name,QQ=QQ,level=level)
+        # 解析info字段中的JSON字符串
+        info = json.loads(license_dict["info"])
+        url = f"http://q2.qlogo.cn/headimg_dl?dst_uin={QQ}&spec=5"
+        try:
+            KpDrawer.generate_certificate(
+                certificate_id=license_dict["lid"],
+                name=info["name"],
+                avatar_url=url,
+                role=role,
+                level=info["level"],
+                date=timestamp_to_date(license_dict["time"])
+            )
+        except Exception as e:
+            log.error(f"生成证书{license_dict['lid']}时出错: {e}")
+            print(f"生成证书{license_dict['lid']}时出错: {e}")
             return JSONResponse(
-            status_code=200,
-            content={
-                "code": 200,
-                "message": "success",
-                "data": {
-                    "img_url": f"http://{DOMAIN}:{PORT}/images/certificate_{license_dict['lid']}.jpg",
+                status_code=400,
+                content={
+                    "code": 400,
+                    "message":f"请求出错：{e}",
+                    "data": {}
                 }
+            )
+        create_image_and_start_deletion(f"certificate_{license_dict['lid']}.jpg")
+        return JSONResponse(
+        status_code=200,
+        content={
+            "code": 200,
+            "message": "success",
+            "data": {
+                "img_url": f"http://{DOMAIN}:{PORT}/images/certificate_{license_dict['lid']}.jpg",
             }
-        )
-        elif role == "dice":
-            pass
-        elif role == "pl":
-            pass
-        else:
-            pass
+        }
+    )
     elif option == "confirm":
         if role == "kp":
             res = license_obj.confirm_kp_license(lid=lid)
