@@ -26,7 +26,7 @@ class DB:
                     license_type TEXT NOT NULL,
                     info TEXT,
                     time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
+                             )
             """)
             self.conn.commit()
         except Exception as e:
