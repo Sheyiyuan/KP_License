@@ -1,7 +1,6 @@
 import uuid
 import time
 import json
-import base58
 
 from database.db_option import DB
 
@@ -9,21 +8,24 @@ class License:
     def __init__(self,db:DB):
         self.namespace = uuid.NAMESPACE_DNS
         self.db = db
-    def generate_lid(self, role:str, name:str,QQ:str):
-        name = f"{role}_{name}_{QQ}"
+    def generate_lid(self, role:str, name:str,QQ:str,level:int):
+        name = f"{role}{name}{QQ}{level}"
         uuid_value = uuid.uuid5(self.namespace, name)
-        # 将UUID转换为bytes然后base58编码
+        # 将UUID转换为bytes然后base62编码
         uuid_bytes = uuid_value.bytes
-        return base58.b58encode(uuid_bytes).decode('utf-8')
-    def register_kp_license(self, name:str, QQ:str, level:int):
+        lid = bytes_to_base62(uuid_bytes)
+        # 去掉末尾的'='
+        lid = lid.rstrip('=')
+        return lid
+    def register_license(self, role:str, name:str, QQ:str, level:int):
         try:
-            lid = self.generate_lid("KP", name, QQ+str(level))
+            lid = self.generate_lid(role, name, QQ,level)
             record = self.db.get_record(lid)
             if record is None:
                 # 确保所有传入值都是字符串或可转换为字符串的类型
                 self.db.add_record(
                     lid=str(lid),
-                    license_type="KP",
+                    license_type=role,
                     info=json.dumps({
                         "name": str(name),
                         "QQ": QQ,
@@ -63,3 +65,16 @@ class License:
             raise e
 
 
+BASE62_CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+
+
+def bytes_to_base62(b):
+    # 将bytes转换为整数
+    num = int.from_bytes(b, byteorder='big')
+    if num == 0:
+        return BASE62_CHARSET[0]
+    result = ""
+    while num > 0:
+        num, remainder = divmod(num, 62)
+        result = BASE62_CHARSET[remainder] + result
+    return result
