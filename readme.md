@@ -72,7 +72,9 @@ python main.py
 
 ### 生成证书
 **请求方式：** `POST`
+
 **请求地址：** `/license`
+
 **请求参数：**
 
 | 参数名    | 类型     | 是否必填 | 描述                                |
@@ -91,7 +93,11 @@ python main.py
 | msg  | string | 错误信息                 |
 | data | object | 数据                   |
 
-** data(obj)的内容：**
+**data(obj)的内容：**
+
+| 参数名          | 类型     | 描述            |
+|--------------|--------|---------------|
+| img_url      | string | 图片url,有效时间1分钟 |
 | data.img_url | string | 图片url,有效时间1分钟 |
 
 ### api体验地址
